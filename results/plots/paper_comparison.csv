@@ -1,0 +1,5 @@
+Algorithm,Cost vs HEFT (%),Energy vs HEFT (%),Makespan vs HEFT (%),Deadline SR (%),Workflows,Approach,Reference
+DD-HPSO (Ours),-13.05,-8.25,7.68,100.0,Montage_50,HEFT-seeded PSO + Selective Duplication,Our Algorithm (DD-HPSO)
+PACM (IEEE TCC 2025),-18.0,,,95.0,"Montage, CyberShake",Path-Aware Heuristic (CPF + DAF sub-deadlines),Cheng et al. 2025 DOI:10.1109/TCC.2025.3612584
+WPSO (IEEE ICCCBDA 2025),-14.0,,-5.0,88.0,"Montage, CyberShake, Epigenomics, LIGO",Enhanced PSO (custom encoding + decoding),Wang et al. 2025 DOI:10.1109/ICCCBDA64898.2025.11030517
+IPSO-GWO (Sci Reports 2025),-12.52,-37.73,-26.14,,"Montage, CyberShake (fog-cloud context)",Hybrid PSO + Grey Wolf Optimizer (fog-cloud),Awad et al. 2025 DOI:10.1038/s41598-025-34462-w
