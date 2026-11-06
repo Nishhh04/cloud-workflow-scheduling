@@ -48,7 +48,7 @@ class DupConfig:
         self.max_energy_ratio   = max_energy_ratio
 
 
-DEFAULT_DUP_CONFIG = DupConfig()
+DEFAULT_DUP_CONFIG = DupConfig(max_extra_periods=1, max_energy_ratio=1.0)
 
 
 # ── Selective Duplication ─────────────────────────────────────────────────────

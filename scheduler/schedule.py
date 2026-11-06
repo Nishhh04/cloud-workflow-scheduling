@@ -268,11 +268,10 @@ def evaluate(wf: Workflow, pool: list, order: list, assign: list,
     for task_id in order:
         vm_idx = assign[task_id]
         est, aft = builder.try_place(task_id, vm_idx)
-        builder.commit(task_id, vm_idx, est, aft)
-
-        # Optional: apply selective duplication after placing task_id
+        # Optional: apply selective duplication BEFORE committing the primary task
         if dup_fn is not None:
             dup_fn(builder, task_id)
+        builder.commit(task_id, vm_idx, est, aft)
 
     return builder.finish()
 

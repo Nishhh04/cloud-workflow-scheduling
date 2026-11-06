@@ -1,0 +1,6 @@
+Algorithm,Cost vs HEFT (%),Energy vs HEFT (%),Makespan vs HEFT (%),Deadline SR (%),Workflows,Approach,Reference,Note
+DD-HPSO (this work),-13.05,-8.25,7.68,100.0,Montage_50,HEFT-seeded PSO + gated duplication,This work (DD-HPSO),"Montage_50, f=1.5"
+HEFT-TD (Genez 2018),-15.0,,-18.0,,"Montage, Epigenome, CyberShake, LIGO (100 tasks)",HEFT + critical-parent duplication,"Genez et al., UCC 2018",Cost is incidental; Epigenome cost +45% vs HEFT
+Lookahead-TD (Genez 2018),2.0,,-7.0,,"Montage, Epigenome, CyberShake, LIGO (100 tasks)",Lookahead HEFT + duplication + reschedule,"Genez et al., UCC 2018","Lookahead-TD vs Lookahead, not vs HEFT"
+PSO (Rodriguez 2014),,,,100.0,"Montage, LIGO, SIPHT, CyberShake","PSO + Deb rules, hourly billing, 97 s boot","Rodriguez & Buyya, IEEE TCC 2014",Cost cheaper than SCS when both feasible; no vs-HEFT %
+CEAS (Li 2018),,,,,"Montage, LIGO, SIPHT, CyberShake",Five-stage heuristic + DVFS slack,"Li et al., IEEE TSC 2018",Qualitative: cheapest vs HEFT; no numeric % in the paper text

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>DD-HPSO: Deadline-Aware HEFT-Seeded PSO with Gated Task Duplication for Scientific Workflows on Clouds</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 10pt;
+    line-height: 1.18;
+    color: #111;
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: 18px 22px 48px;
+    background: #fff;
+  }
+  h1.title {
+    font-size: 16pt;
+    text-align: center;
+    font-weight: bold;
+    margin: 8px 0 6px;
+    line-height: 1.25;
+  }
+  .authors, .affil, .meta {
+    text-align: center;
+    font-size: 10pt;
+    margin: 2px 0;
+  }
+  .affil { font-style: italic; font-size: 9pt; }
+  .meta { font-size: 8.5pt; color: #333; margin-bottom: 10px; }
+  .rule { border-top: 1.5pt solid #000; margin: 8px 0 10px; }
+  h2 {
+    font-size: 11pt;
+    font-weight: bold;
+    margin: 12px 0 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  h3 { font-size: 10.5pt; font-style: italic; font-weight: bold; margin: 9px 0 4px; }
+  p { margin: 0 0 7px; text-align: justify; }
+  .abstract {
+    font-size: 9.5pt;
+    margin: 0 8px 10px;
+  }
+  .abstract .lab { font-weight: bold; font-style: italic; }
+  .keywords { font-size: 9.5pt; margin: 0 8px 12px; }
+  .twocol {
+    column-count: 2;
+    column-gap: 8mm;
+    column-rule: 0.4pt solid #bbb;
+  }
+  figure {
+    margin: 8px 0 10px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  figure img { width: 100%; display: block; }
+  figcaption {
+    font-size: 8.5pt;
+    margin-top: 4px;
+    text-align: justify;
+  }
+  figcaption b { font-weight: bold; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+    margin: 6px 0 8px;
+    break-inside: avoid;
+  }
+  th, td {
+    border: 0.5pt solid #444;
+    padding: 3px 4px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #eee; font-weight: bold; }
+  td.num, th.num { text-align: right; }
+  .eq {
+    text-align: center;
+    font-style: italic;
+    margin: 6px 0 8px;
+    font-size: 10pt;
+  }
+  ol.refs { padding-left: 18px; font-size: 9pt; }
+  ol.refs li { margin-bottom: 4px; text-align: justify; }
+  .foot {
+    margin-top: 14px;
+    font-size: 8pt;
+    color: #444;
+    border-top: 0.5pt solid #999;
+    padding-top: 6px;
+  }
+  @media print {
+    body { padding: 0; max-width: none; }
+    .noprint { display: none; }
+  }
+  .noprint {
+    text-align: center;
+    font-family: Segoe UI, sans-serif;
+    font-size: 12px;
+    background: #1a365d;
+    color: #fff;
+    padding: 8px;
+    margin: -18px -22px 16px;
+  }
+</style>
+</head>
+<body>
+
+<div class="noprint">IEEE-style course report — print this page to PDF (Ctrl+P → Save as PDF). Figures load from <code>results/plots/ieee/</code>.</div>
+
+<h1 class="title">DD-HPSO: Deadline-Aware HEFT-Seeded Particle Swarm Optimisation with Gated Task Duplication for Scientific Workflow Scheduling on IaaS Clouds</h1>
+<p class="authors">CSE-574 Cloud Computing — Project Report</p>
+<p class="affil">Department of Computer Science and Engineering</p>
+<p class="meta">Simulation study on Pegasus Montage, CyberShake, Epigenomics and LIGO Inspiral workflows</p>
+<div class="rule"></div>
+
+<p class="abstract"><span class="lab">Abstract—</span>
+Scientific workflows are directed acyclic graphs (DAGs) of data-dependent tasks. When they are executed on infrastructure-as-a-service (IaaS) clouds, the scheduler must choose heterogeneous virtual machines (VMs) so that a user deadline is met while monetary cost and energy are kept down. Three well-cited lines of work each solve only part of this problem: Genez <i>et al.</i> duplicate critical parents to cut communication but ignore deadlines, energy and hourly billing; Rodriguez and Buyya minimise cost under a deadline with particle swarm optimisation (PSO) but omit energy and duplication and suffer high run-to-run variability; Li <i>et al.</i> (CEAS) reduce cost then energy with greedy stages and DVFS, without boot time, duplication or a global search. This paper presents DD-HPSO, which combines HEFT-seeded PSO, Deb’s constraint handling, hourly billing with a 97&nbsp;s boot delay, a busy/idle energy model, and <i>gated</i> task duplication that is forbidden from buying extra billing hours. On seven Pegasus DAGs (50–100 tasks) and four deadline tightness factors, HEFT-seeded PSO meets 100% of deadlines, including cases where random PSO, Min-Min and Max-Min fail. On Montage-50 with deadline factor 1.5, DD-HPSO reduces cost by 13.1% and energy by 8.2% versus HEFT, at +7.7% makespan still inside the deadline. Across 1,204 runs the cost gate accepted zero duplicates, so the measured gain is seeding, not extra copies—an outcome that directly addresses Genez’s incidental cost increases of up to 45%.</p>
+
+<p class="keywords"><b>Keywords—</b>scientific workflow, cloud scheduling, HEFT, particle swarm optimisation, task duplication, deadline, energy-aware scheduling</p>
+
+<div class="twocol">
+
+<h2>I. Introduction</h2>
+<p>Pegasus-style scientific applications (astronomical mosaics, seismic hazard, genome pipelines, gravitational-wave searches) are submitted as DAGs. A cloud user rents VMs of different speeds and prices. Billing is typically per hour rounded up; a VM also spends on the order of 97&nbsp;s booting before it can run work. Inter-VM data movement occupies the network at finite bandwidth, while co-located tasks pay zero transfer time. Energy is consumed both while a VM is busy and while it sits idle on a paid lease.</p>
+<p>Heterogeneous Earliest Finish Time (HEFT) is the standard list scheduler. It ranks tasks by upward rank and always assigns the VM with the earliest finish time, so it is fast and expensive. The research summarised in our literature note identifies a concrete gap: <i>no paper combines duplication, deadline-aware cost minimisation, and hourly billing</i>, and energy is treated separately from the other two objectives.</p>
+<p>DD-HPSO (Deadline-aware Duplication + HEFT-seeded PSO) is a single static scheduler for that gap. A particle encodes one VM index per task. Task order is fixed to HEFT rank so every particle is a legal topological schedule. Particle&nbsp;0 is the HEFT assignment; Deb’s rules ensure the swarm cannot return a worse feasible solution than HEFT. Duplication of a critical parent is tried after each placement and kept only if the child finishes earlier <i>and</i> no extra billing period is incurred.</p>
+
+<h2>II. Related Work and Gaps</h2>
+<h3>A. Task duplication (Genez et al., UCC 2018)</h3>
+<p>HEFT-TD and Lookahead-TD temporarily copy the critical parent onto each candidate VM and keep the copy if earliest finish time (EFT) improves. On Montage they report, versus HEFT, about −18% makespan, −35% data volume and −15% cost; Lookahead-TD versus Lookahead is −7% makespan and +2% cost. On Epigenome, HEFT-TD <i>increases</i> cost by 45%; on CyberShake +37%; on LIGO +10% with up to 7× more data moved. There is no deadline, no energy model, no boot time and no hourly rounding. Runtime is 10–100× the base heuristics.</p>
+<h3>B. Deadline-aware PSO (Rodriguez and Buyya, TCC 2014)</h3>
+<p>Provisioning and scheduling are one constrained optimisation. The particle encoding, Deb’s rules, hourly fitness and 97&nbsp;s boot time are the model we reuse. PSO and SCS often reach 100% deadline hit rate while IC-PCP frequently misses. PSO is cheaper than SCS when both are feasible. The paper reports no energy metric, no duplication, high makespan variance across runs, and sensitivity to the initial VM pool. Complexity grows poorly with workflow size.</p>
+<h3>C. CEAS (Li et al., TSC 2018)</h3>
+<p>Five polynomial stages pick VM types from sub-deadlines, merge sequential and parallel tasks, reuse idle paid hours, and reclaim slack with DVFS. The authors show (in plots only) the lowest cost among CEAS, MOHEFT and HEFT, and the lowest energy among CEAS, EES and EHEFT. No percentages appear in the text. The model omits boot time and duplication. DVFS is generally not a tenant control on public IaaS, so the energy result is closer to a provider scheduler than to a user-side one.</p>
+<h3>D. Position of this work</h3>
+<p>Fig.&nbsp;1 records which of those capabilities each method actually has. DD-HPSO is the only row that is “yes” on deadline, hourly billing with boot, cost, energy, a duplication hook, HEFT seeding and heterogeneous VMs. Whether duplication <i>fires</i> is an empirical question (Section&nbsp;VI).</p>
+
+<figure>
+  <img src="../results/plots/ieee/fig_capability_matrix.png" alt="Capability matrix"/>
+  <figcaption><b>Fig. 1.</b> Feature coverage of the three papers in the literature note versus DD-HPSO. Genez cost reductions are incidental; Rodriguez has no energy; CEAS has no boot time and assumes DVFS.</figcaption>
+</figure>
+
+<h2>III. Cloud and Workflow Model</h2>
+<p>Four VM types form a pool of 20 instances (five of each). Execution time of task <i>i</i> on type <i>k</i> is \(L_i / \mathrm{MIPS}_k\). Transfer time is data (MB) / 20&nbsp;MB/s, or zero on the same VM. Lease cost is \(\lceil T_{\mathrm{lease}}/3600\rceil\) times the hourly price. Energy is \(P_{\mathrm{busy}}T_{\mathrm{busy}} + P_{\mathrm{idle}}T_{\mathrm{idle}}\).</p>
+
+<table>
+  <tr><th>Type</th><th class="num">MIPS</th><th class="num">$/h</th><th class="num">P_busy (W)</th><th class="num">P_idle (W)</th></tr>
+  <tr><td>small</td><td class="num">1000</td><td class="num">0.10</td><td class="num">100</td><td class="num">65</td></tr>
+  <tr><td>medium</td><td class="num">2000</td><td class="num">0.19</td><td class="num">170</td><td class="num">110</td></tr>
+  <tr><td>large</td><td class="num">4000</td><td class="num">0.36</td><td class="num">300</td><td class="num">190</td></tr>
+  <tr><td>xlarge</td><td class="num">8000</td><td class="num">0.70</td><td class="num">520</td><td class="num">330</td></tr>
+</table>
+<p>Boot time is 97&nbsp;s (Rodriguez and Buyya). Workflows are Pegasus DAX files: Montage 50/100, CyberShake 50/100, Epigenomics 100, Inspiral (LIGO) 50/100.</p>
+<p>The deadline is \(D = f \cdot M_{\mathrm{HEFT}}\) with \(f \in \{1.1, 1.5, 2.0, 3.0\}\). Factor 1.1 is a tight scientific deadline; 3.0 is loose. The normalised objective (HEFT scores \(F=1\)) is</p>
+<p class="eq">F = 0.4 C/C<sub>H</sub> + 0.3 E/E<sub>H</sub> + 0.3 M/M<sub>H</sub></p>
+<p>Deb’s rules: feasible beats infeasible; then lower \(F\); then lower violation \(V=\max(0, M-D)\).</p>
+
+<h2>IV. Algorithms</h2>
+<p><b>Baselines.</b> HEFT (upward rank + earliest finish). Min-Min and Max-Min on the ready set.</p>
+<p><b>PSO family (ablation).</b> Swarm of 15 particles, 40 iterations, inertia 0.9→0.4, \(c_1=c_2=2.0\). Stochastic methods use 10 seeds.</p>
+<table>
+  <tr><th>Variant</th><th>HEFT seed</th><th>Duplication</th></tr>
+  <tr><td>PSO-plain</td><td>no (random, Rodriguez-style)</td><td>no</td></tr>
+  <tr><td>PSO-seeded</td><td>yes</td><td>no</td></tr>
+  <tr><td>PSO-dup</td><td>no</td><td>yes</td></tr>
+  <tr><td>DD-HPSO</td><td>yes</td><td>yes</td></tr>
+</table>
+<p>Seeding sets particle 0 to \(x[d]=\mathrm{assign}_{\mathrm{HEFT}}[d]+0.5\) and perturbs 15% of coordinates on the others. Gated duplication copies the critical parent only if the child finishes earlier, extra billing periods are 0, and extra energy is at most 50% of the child’s energy. That is the opposite of Genez’s ungated EFT test.</p>
+
+<h2>V. Experimental Setup</h2>
+<p>All algorithms share one Python <code>ScheduleBuilder</code> (place/commit) so billing, boot and energy cannot drift between methods. The grid is 7 workflows × 4 factors × (3 deterministic + 4 stochastic × 10 seeds) = 1,204 rows in <code>results/results.csv</code>. Metrics: makespan, cost, energy (Wh), utilisation, deadline success rate (SR), \(F\).</p>
+
+<h2>VI. Results</h2>
+<h3>A. Cost and energy versus HEFT (Montage-50)</h3>
+<p>Fig.&nbsp;2 plots cost and energy divided by the HEFT value. At \(f=1.5\), DD-HPSO (and PSO-seeded) reach mean cost $5.36 versus HEFT $6.16 (−13.1%) and 115.1&nbsp;Wh versus 125.45&nbsp;Wh (−8.2%), with makespan 155.6&nbsp;s versus 144.5&nbsp;s (+7.7%) against \(D \approx 217\)&nbsp;s. Random PSO is cheaper only when \(f \ge 2\), where it is allowed a much longer makespan; at \(f=1.1\) it is infeasible.</p>
+
+<figure>
+  <img src="../results/plots/ieee/fig_montage_cost_energy.png" alt="Montage cost energy"/>
+  <figcaption><b>Fig. 2.</b> Montage-50 cost and energy relative to HEFT for four deadline factors. Error bars are one standard deviation over seeds. The dashed line is HEFT.</figcaption>
+</figure>
+
+<figure>
+  <img src="../results/plots/ieee/fig_cost_boxplot.png" alt="Cost boxplot"/>
+  <figcaption><b>Fig. 3.</b> Cost / HEFT cost over 10 seeds (Montage-50, \(f=1.5\)). Seeded methods are both cheaper on average and tighter than PSO-plain—the variability gap noted by Rodriguez and Buyya.</figcaption>
+</figure>
+
+<h3>B. Deadline reliability</h3>
+<p>Fig.&nbsp;4 is the result that should be shown first in a viva. At \(f=1.1\), PSO-plain (and PSO-dup) record 0% SR on Montage-50, CyberShake-100, Epigenomics-100 and Inspiral-50. Min-Min and Max-Min also miss CyberShake-100, Epigenomics-100 and Inspiral. HEFT and the two seeded PSO variants remain at 100%. Fig.&nbsp;5 summarises the same ablation as bars: seeding, not duplication, is what moves SR from 0% to 100% and keeps \(F\) near 1.</p>
+
+<figure>
+  <img src="../results/plots/ieee/fig_deadline_sr.png" alt="Deadline heatmaps"/>
+  <figcaption><b>Fig. 4.</b> Deadline success rate (%). Green is reliable. Random PSO collapses at tight \(f\); seeded PSO does not.</figcaption>
+</figure>
+
+<figure>
+  <img src="../results/plots/ieee/fig_ablation_tight.png" alt="Ablation at f=1.1"/>
+  <figcaption><b>Fig. 5.</b> Ablation at \(f=1.1\). PSO-seeded and DD-HPSO overlap: duplication did not change the schedule.</figcaption>
+</figure>
+
+<h3>C. All workflows at moderate deadline</h3>
+<p>Fig.&nbsp;6 shows percentage change of DD-HPSO versus HEFT at \(f=1.5\). Gains are largest on Montage-50 and CyberShake-50. Epigenomics-100 is already ~99% utilised under HEFT, so \(F \approx 0.999\). Fig.&nbsp;7 shows \(F\) for Min-Min and the PSO variants; Min-Min can beat \(F\) on Montage but loses SR on the tighter, heavier DAGs (Fig.&nbsp;4).</p>
+
+<figure>
+  <img src="../results/plots/ieee/fig_ddhpso_vs_heft.png" alt="DD-HPSO vs HEFT all workflows"/>
+  <figcaption><b>Fig. 6.</b> DD-HPSO versus HEFT at \(f=1.5\) on all seven DAGs. Negative is better for cost, energy and makespan. Makespan is slightly higher on Montage/CyberShake-50 but remains feasible.</figcaption>
+</figure>
+
+<figure>
+  <img src="../results/plots/ieee/fig_norm_f.png" alt="Normalised F"/>
+  <figcaption><b>Fig. 7.</b> Combined objective \(F\) at \(f=1.5\). Values below the dashed line beat HEFT. PSO-plain is worse than HEFT on every workflow in this panel.</figcaption>
+</figure>
+
+<table>
+  <caption style="caption-side:bottom; font-size:8.5pt; text-align:left; margin:2px 0 8px;"><b>Table I.</b> Montage-50, \(f=1.5\) (\(D \approx 216.8\)&nbsp;s). Stochastic rows are means over 10 seeds.</caption>
+  <tr><th>Algorithm</th><th class="num">Makespan (s)</th><th class="num">Cost ($)</th><th class="num">Energy (Wh)</th><th class="num">SR</th><th class="num">F</th></tr>
+  <tr><td>HEFT</td><td class="num">144.5</td><td class="num">6.16</td><td class="num">125.45</td><td class="num">100%</td><td class="num">1.000</td></tr>
+  <tr><td>Min-Min</td><td class="num">143.8</td><td class="num">5.59</td><td class="num">112.17</td><td class="num">100%</td><td class="num">0.930</td></tr>
+  <tr><td>Max-Min</td><td class="num">151.7</td><td class="num">5.59</td><td class="num">116.73</td><td class="num">100%</td><td class="num">0.957</td></tr>
+  <tr><td>PSO-plain</td><td class="num">214.3</td><td class="num">5.82</td><td class="num">143.74</td><td class="num">80%</td><td class="num">1.167</td></tr>
+  <tr><td>PSO-seeded / DD-HPSO</td><td class="num">155.6</td><td class="num">5.36</td><td class="num">115.10</td><td class="num">100%</td><td class="num">0.946</td></tr>
+</table>
+
+<h3>D. Duplication did not fire</h3>
+<p>The column <code>n_duplicates</code> is identically zero on all 1,204 rows. PSO-dup matches PSO-plain and DD-HPSO matches PSO-seeded on every workflow. The implementation copies a parent only inside already-paid time. That policy is why we do not reproduce Genez’s Epigenome/LIGO cost increases. It is also why claiming “duplication improved Montage” would be false on this grid. The module is present; the gate kept it silent.</p>
+
+<h2>VII. Comparison with the Three Papers</h2>
+<p>Fig.&nbsp;8 overlays published Montage averages from Genez with our Montage-50, \(f=1.5\) measurement. Fig.&nbsp;9 adds Rodriguez and CEAS, leaving N/A where the papers do not report a HEFT-relative percentage. Table&nbsp;II states the same numbers in one place.</p>
+
+<figure>
+  <img src="../results/plots/ieee/fig_vs_genez.png" alt="Versus Genez"/>
+  <figcaption><b>Fig. 8.</b> Montage: DD-HPSO (this simulator) versus Genez HEFT-TD / Lookahead-TD (published averages). HEFT-TD wins makespan because it has no deadline; DD-HPSO spends slack on cheaper VMs and reports energy and deadline SR, which Genez does not.</figcaption>
+</figure>
+
+<figure>
+  <img src="../results/plots/ieee/fig_literature_bars.png" alt="Literature bars"/>
+  <figcaption><b>Fig. 9.</b> Metrics that can be compared at all. Rodriguez’s 100% SR is their typical PSO/SCS hit rate, not a number from our code. CEAS contributes no numeric bars.</figcaption>
+</figure>
+
+<table>
+  <caption style="caption-side:bottom; font-size:8.5pt; text-align:left; margin:2px 0 8px;"><b>Table II.</b> Literature comparison. DD-HPSO is Montage-50, \(f=1.5\), 10 seeds. Other rows are taken from the literature note, not a shared simulator.</caption>
+  <tr>
+    <th>Method</th>
+    <th>Cost vs HEFT</th>
+    <th>Energy vs HEFT</th>
+    <th>Makespan vs HEFT</th>
+    <th>Deadline</th>
+    <th>Caveat</th>
+  </tr>
+  <tr>
+    <td>DD-HPSO (this work)</td>
+    <td>−13.1%</td>
+    <td>−8.2%</td>
+    <td>+7.7% (inside D)</td>
+    <td>100% SR</td>
+    <td>Same code as HEFT baseline</td>
+  </tr>
+  <tr>
+    <td>HEFT-TD (Genez 2018)</td>
+    <td>−15% (Montage)</td>
+    <td>not reported</td>
+    <td>−18% (Montage)</td>
+    <td>none</td>
+    <td>Epigenome cost +45%</td>
+  </tr>
+  <tr>
+    <td>Lookahead-TD (Genez 2018)</td>
+    <td>+2% vs Lookahead</td>
+    <td>not reported</td>
+    <td>−7% vs Lookahead</td>
+    <td>none</td>
+    <td>Not versus HEFT</td>
+  </tr>
+  <tr>
+    <td>PSO (Rodriguez 2014)</td>
+    <td>cheaper than SCS</td>
+    <td>none</td>
+    <td>not vs HEFT</td>
+    <td>often 100%</td>
+    <td>High variance; no seed</td>
+  </tr>
+  <tr>
+    <td>CEAS (Li 2018)</td>
+    <td>“lowest” vs HEFT</td>
+    <td>“lowest” vs EES</td>
+    <td>not primary</td>
+    <td>yes (heuristic)</td>
+    <td>No % in text; DVFS</td>
+  </tr>
+</table>
+
+<p><b>Against Genez.</b> Similar Montage cost reduction (−13% vs −15%) without sacrificing deadline feasibility and without the cost blow-ups they record when duplication is ungated. We do <i>not</i> beat their −18% makespan; we are not trying to. Makespan-only duplication is a different problem.</p>
+<p><b>Against Rodriguez.</b> Same Deb/boot/hourly skeleton. HEFT seeding is the engineering answer to their variability and pool-sensitivity discussion. Random PSO in our grid is the counter-example: 0% SR at \(f=1.1\). We add energy and a duplication hook they omitted.</p>
+<p><b>Against CEAS.</b> Same two objectives (cost then energy) under a deadline, but with boot time and without assuming the user can set CPU frequency. We publish percentages versus HEFT; they did not. We cannot claim a numeric win over CEAS.</p>
+
+<h2>VIII. Conclusion</h2>
+<p>DD-HPSO was designed to occupy the gap named in the literature note: duplication plus deadline-aware cost (and energy) plus hourly billing with boot time. On Pegasus DAGs with a 20-VM heterogeneous pool, HEFT-seeded PSO is the component that works. It delivers 100% deadline success where Rodriguez-style random PSO fails, and a 13.1% / 8.2% cost/energy cut versus HEFT on Montage-50 at \(f=1.5\). Gated duplication, the piece taken from Genez, accepted no copies under a zero extra-hour rule; that is a result, not a bug, and it explains why we avoid Genez’s incidental cost increases. Future work is to relax the gate on communication-heavy DAGs with CCR sweeps, as Genez did, while keeping Deb feasibility, and to scale beyond 100 tasks.</p>
+
+<h2>References</h2>
+<ol class="refs">
+  <li>T. A. L. Genez, I. Pietri, R. Sakellariou, L. F. Bittencourt, and E. R. M. Madeira, “Scheduling scientific workflows on clouds using a task duplication approach,” in <i>Proc. IEEE/ACM Utility and Cloud Computing (UCC)</i>, 2018.</li>
+  <li>M. A. Rodriguez and R. Buyya, “Deadline based resource provisioning and scheduling algorithm for scientific workflows on clouds,” <i>IEEE Trans. Cloud Computing</i>, vol. 2, no. 2, pp. 222–235, 2014.</li>
+  <li>Z. Li, J. Ge, H. Hu, W. Song, H. Hu, and B. Luo, “Cost and energy aware scheduling algorithm for scientific workflows with deadline constraint in clouds,” <i>IEEE Trans. Services Computing</i>, vol. 11, no. 4, pp. 713–726, 2018.</li>
+  <li>H. Topcuoglu, S. Hariri, and M.-Y. Wu, “Performance-effective and low-complexity task scheduling for heterogeneous computing,” <i>IEEE Trans. Parallel Distrib. Syst.</i>, vol. 13, no. 3, pp. 260–274, 2002.</li>
+  <li>Pegasus Workflow Management System, “Workflow gallery,” Pegasus DAX traces (Montage, CyberShake, Epigenomics, LIGO Inspiral).</li>
+</ol>
+
+</div>
+
+<p class="foot">CSE-574 course report (IEEE conference layout for print). Source: <code>reasearch.md</code>, <code>results/results.csv</code>, <code>results/plots/ieee/</code>. Open this file in a browser and use Print → Save as PDF for an IEEE-looking PDF.</p>
+
+</body>
+</html>
